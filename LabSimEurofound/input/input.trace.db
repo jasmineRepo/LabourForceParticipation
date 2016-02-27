@@ -1,0 +1,27 @@
+10-21 23:12:46 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "Medium"; SQL statement:
+SELECT * FROM PERSON_IT where EDUCATION is not 'Low' aND noT 'Medium' anD noT 'High' [22018-170]
+10-24 02:03:48 database: close
+org.h2.message.DbException: IO Exception: "java.io.IOException: The requested operation cannot be performed on a file with a user-mapped section open"; "C:/Users/richardsonr/git/Eurofound3update/FemLabPart2/input/input.h2.db" [90031-170]
+	at org.h2.message.DbException.get(DbException.java:158)
+	at org.h2.message.DbException.convertIOException(DbException.java:315)
+	at org.h2.store.FileStore.setLength(FileStore.java:356)
+	at org.h2.store.PageStore.compact(PageStore.java:638)
+	at org.h2.engine.Database.closeOpenFilesAndUnlock(Database.java:1198)
+	at org.h2.engine.Database.close(Database.java:1148)
+	at org.h2.engine.Database.removeSession(Database.java:1027)
+	at org.h2.engine.Session.close(Session.java:562)
+	at org.h2.jdbc.JdbcConnection.close(JdbcConnection.java:364)
+	at jasmine.labsimeurofound.model.LabSimEurofoundModel.buildObjects(LabSimEurofoundModel.java:119)
+	at microsim.engine.SimulationEngine.buildModels(SimulationEngine.java:364)
+	at microsim.engine.SimulationEngine.startSimulation(SimulationEngine.java:292)
+	at microsim.engine.MultiRun.go(MultiRun.java:145)
+	at microsim.engine.MultiRun.run(MultiRun.java:107)
+Caused by: org.h2.jdbc.JdbcSQLException: IO Exception: "java.io.IOException: The requested operation cannot be performed on a file with a user-mapped section open"; "C:/Users/richardsonr/git/Eurofound3update/FemLabPart2/input/input.h2.db" [90031-170]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:329)
+	... 14 more
+Caused by: java.io.IOException: The requested operation cannot be performed on a file with a user-mapped section open
+	at java.io.RandomAccessFile.setLength(Native Method)
+	at org.h2.store.fs.FileDisk.truncate(FilePathDisk.java:402)
+	at org.h2.store.FileStore.setLength(FileStore.java:351)
+	... 11 more
