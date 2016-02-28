@@ -122,7 +122,9 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
             stat.close();
             conn.close();
         } catch(ClassNotFoundException|SQLException e){
-            System.out.println( "ERROR: Class not found: " + e.getMessage() + "\nCheck that the input.h2.db exists in the input folder.  If not, unzip the input.h2.zip file and store the resulting input.h2.db in the input folder!\n");
+            System.out.println( "ERROR: Class not found: " + e.getMessage() + "\nCheck that the input.h2.db "
+            		+ "exists in the input folder.  If not, unzip the input.h2.zip file and store the resulting "
+            		+ "input.h2.db in the input folder!\n");
         }
         
 		if(fixRandomSeed) {
