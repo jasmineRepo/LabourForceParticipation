@@ -2,6 +2,10 @@
 
 by Matteo Richiardi and Ross Richardson (2015)
 
+NOTE: BEFORE RUNNING THE SIMULATIONS - the input database is stored in the input folder in zipped form as input.h2.zip as the unzipped file is over 100MB and cannot be stored on GitHub.  Please unzip this file and store the resulting input.h2.db file in the same input folder.  The simulation will not run until you do this!
+
+-------------------------------------------------------------------------------
+
 A microsimulation model developed for the project "Anticipating the future trend of female labour market participation and its impact on economic growth", prepared for the European Foundation for the Improvement of Living and Working Conditions as Lot 3 of "The gender and employment gap: Challenges and Solutions", awarded to LABORatorio Revelli Centre for Employment Studies, Moncalieri, Italy.
 
 The microsimulation model aims at providing medium- and long-term projections of participation and employment rates for a selected number of Member States: Italy, Spain, Ireland, Hungary and Greece. These case studies have been selected because they are among the most problematic in terms of female participation and employment rates, and gender (in)equality. Sweden has also been included as a high participation benchmark.
