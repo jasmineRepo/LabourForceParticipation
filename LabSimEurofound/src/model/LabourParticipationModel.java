@@ -97,11 +97,7 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
 //	private double[] initialChildrenGap;								//For female participation children gap alignment
 //	private MultiKeyMap initialChildrenGap = MultiKeyMap.decorate(new LinkedMap());			//For female participation children gap alignment
 	private MultiKeyMap initialChildrenGap = new MultiKeyMap();			//For female participation children gap alignment
-	
-//	public LabourParticipationModel() {			//Should be automatically created
-//		super();		
-//	}
-	
+
 
 	// ---------------------------------------------------------------------
 	// Manager methods

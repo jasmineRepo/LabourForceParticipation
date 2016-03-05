@@ -2,7 +2,6 @@ package data.filters;
 
 import microsim.statistics.ICollectionFilter;
 import model.Person;
-import model.enums.Activity_status;
 import model.enums.Education;
 import model.enums.Gender;
 

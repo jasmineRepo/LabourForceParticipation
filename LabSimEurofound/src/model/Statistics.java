@@ -10,7 +10,7 @@ import microsim.data.db.PanelEntityKey;
 public class Statistics {
 
 	@Id
-	private PanelEntityKey id;
+	private PanelEntityKey key = new PanelEntityKey(1L);
 
 	@Column(name="avg_participation_of_males_aged_15_to_64")
 	private double avgPartRateMales15_64;

@@ -1,7 +1,18 @@
 package experiment;
 
+import data.filters.FemaleAgeGroupCSfilter;
+import data.filters.FemalesAgeGroupEducationCSfilter;
+import data.filters.FemalesWithChildren3underAgeGroupCSfilter;
+import data.filters.FemalesWithChildrenAgeGroupCSfilter;
+import data.filters.FemalesWithChildrenAgeGroupEducationCSfilter;
+import data.filters.FemalesWithoutChildrenAgeGroupCSfilter;
+import data.filters.MaleAgeGroupCSfilter;
+import model.LabourParticipationModel;
+import model.Person;
+import model.Statistics;
+import model.enums.Education;
 import microsim.annotation.ModelParameter;
-import microsim.data.db.DatabaseUtils;
+import microsim.data.DataExport;
 import microsim.engine.AbstractSimulationCollectorManager;
 import microsim.engine.SimulationEngine;
 import microsim.engine.SimulationManager;
@@ -10,27 +21,21 @@ import microsim.event.SingleTargetEvent;
 import microsim.statistics.CrossSection;
 import microsim.statistics.IDoubleSource;
 import microsim.statistics.functions.MeanArrayFunction;
-import model.LabourParticipationModel;
-import model.Person;
-import model.Statistics;
-import model.enums.Education;
 
 import org.apache.log4j.Logger;
-
-import data.filters.FemaleAgeGroupCSfilter;
-import data.filters.FemalesAgeGroupEducationCSfilter;
-import data.filters.FemalesWithChildren3underAgeGroupCSfilter;
-import data.filters.FemalesWithChildrenAgeGroupCSfilter;
-import data.filters.FemalesWithChildrenAgeGroupEducationCSfilter;
-import data.filters.FemalesWithoutChildrenAgeGroupCSfilter;
-import data.filters.MaleAgeGroupCSfilter;
 
 public class LabourParticipationCollector extends AbstractSimulationCollectorManager implements EventListener {
 
 	private static Logger log = Logger.getLogger(LabourParticipationCollector.class);
 	
+	@ModelParameter(description="Toggle to turn database persistence on/off")
+	private boolean exportToDatabase = false;
+	
+	@ModelParameter(description="Toggle to turn export to .csv files on/off")
+	private boolean exportToCSV = true;
+	
 	@ModelParameter(description="Toggle to turn persistence of persons on/off")
-	private boolean persistPersons = false;
+	private boolean persistPersons = true;
 
 	@ModelParameter(description="First time-step to dump data to database")
 	private Long dataDumpStartTime = 0L;
@@ -84,6 +89,9 @@ public class LabourParticipationCollector extends AbstractSimulationCollectorMan
 	private MeanArrayFunction fAvgEmplRateMales20_64;
 	private MeanArrayFunction fAvgEmplRateFemales20_64;
 	
+	private DataExport exportPersons;
+	private DataExport exportStatistics;
+	
 	public LabourParticipationCollector(SimulationManager manager) {
 		super(manager);		
 	}
@@ -104,7 +112,8 @@ public class LabourParticipationCollector extends AbstractSimulationCollectorMan
 	
 		case DumpPersons:
 			try {
-				DatabaseUtils.snap(((LabourParticipationModel) getManager()).getPersons());
+				exportPersons.export();
+//				DatabaseUtils.snap(((LabSimEurofoundModel) getManager()).getPersons());
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -112,7 +121,8 @@ public class LabourParticipationCollector extends AbstractSimulationCollectorMan
 		case DumpStatistics:
 			updateStatistics();
 			try {
-				DatabaseUtils.snap(stats);
+				exportStatistics.export();
+//				DatabaseUtils.snap(stats);
 //				 DatabaseUtils.snap(DatabaseUtils.getOutEntityManger(), 
 //							(long) SimulationEngine.getInstance().getCurrentRunNumber(), 
 //							getEngine().getTime(), 
@@ -134,6 +144,10 @@ public class LabourParticipationCollector extends AbstractSimulationCollectorMan
 		final LabourParticipationModel model = (LabourParticipationModel) getManager();
 		
 		stats = new Statistics();
+		
+		//For export to database or .csv files.
+		exportPersons = new DataExport(((LabourParticipationModel) getManager()).getPersons(), exportToDatabase, exportToCSV);
+		exportStatistics = new DataExport(stats, exportToDatabase, exportToCSV);
 		
 		//Create CS but still need to set filters (see afterwards)
 		//Uses getDoubleValue of Person class implementation of IDoubleSource interface in order to get variable representing whether the person is active (i.e. participates in the labour market).  Should be quicker than reflection method below. 
@@ -335,6 +349,22 @@ public class LabourParticipationCollector extends AbstractSimulationCollectorMan
 
 	public void setStats(Statistics stats) {
 		this.stats = stats;
+	}
+
+	public boolean isExportToDatabase() {
+		return exportToDatabase;
+	}
+
+	public void setExportToDatabase(boolean exportToDatabase) {
+		this.exportToDatabase = exportToDatabase;
+	}
+
+	public boolean isExportToCSV() {
+		return exportToCSV;
+	}
+
+	public void setExportToCSV(boolean exportToCSV) {
+		this.exportToCSV = exportToCSV;
 	}
 
 }

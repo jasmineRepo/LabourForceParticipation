@@ -4,7 +4,6 @@ import microsim.data.excel.ExcelAssistant;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.statistics.regression.MultiProbitRegression;
 import microsim.statistics.regression.ProbitRegression;
-import microsim.statistics.regression.RegressionColumnNames;
 import microsim.statistics.regression.RegressionUtils;
 import model.LabourParticipationModel;
 import model.Person;
@@ -17,11 +16,10 @@ import model.enums.Region;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import microsim.engine.SimulationEngine;
 
-import org.apache.commons.collections.MapIterator;
-import org.apache.commons.collections.keyvalue.MultiKey;
 import org.apache.commons.collections.map.MultiKeyMap;
 
 public class Parameters {
@@ -93,14 +91,8 @@ public class Parameters {
 
 	// regression coefficients
 	private static MultiKeyCoefficientMap coeffSchooling;
-	private static MultiKeyCoefficientMap coeffSchoolingLow;	// used by ModelEducation.Graduation
-	private static MultiKeyCoefficientMap coeffSchoolingMedium;	// used by ModelEducation.Graduation
-	private static MultiKeyCoefficientMap coeffEducationLowHighCombined;	// used by ModelEducation.Multiprobit in order to first bootstrap the coefficients, which are then seperated and seperately fed into the MultiProbitRegression
 	private static MultiKeyCoefficientMap coeffEducationLow;	// used by ModelEducation.Multiprobit
-	private static MultiKeyCoefficientMap coeffEducationMedium; // used by ModelEducation.TwoStageProbit
 	private static MultiKeyCoefficientMap coeffEducationHigh;	// used by both ModelEducation.Multiprobit and ModelEducation.TwoStageProbit (in different ways)
-	private static MultiKeyCoefficientMap coeffGraduationMedium; // used by ModelEducation.Graduation
-	private static MultiKeyCoefficientMap coeffGraduationHigh; 	// used by ModelEducation.Graduation
 	private static MultiKeyCoefficientMap coeffEmployment;
 	private static MultiKeyCoefficientMap coeffBirthFemales;
 	private static MultiKeyCoefficientMap coeffUnionFemales;
@@ -117,7 +109,6 @@ public class Parameters {
 	private static ProbitRegression regSchoolingLow;		// used by ModelEducation.Graduation
 	private static ProbitRegression regSchoolingMedium;		// used by ModelEducation.Graduation
 	private static MultiProbitRegression<Education> regEducationLevel;
-	private static ProbitRegression regEducationLow;		// used by ModelEducation.Multiprobit
 	private static ProbitRegression regEducationMedium;		// used by ModelEducation.TwoStageProbit
 	private static ProbitRegression regEducationHigh;		// used by both ModelEducation.Multiprobit and ModelEducation.TwoStageProbit (in different ways)
 	private static ProbitRegression regGraduationMedium;	// used by ModelEducation.Graduation
@@ -171,49 +162,56 @@ public class Parameters {
 		// Regressions coefficients
 		switch (modelEducation) {
 			case Multiprobit:
-//				coeffEducationLow = ExcelAssistant.loadCoefficientMap("input/reg_education_low.xls", ((LabourParticipationModel) SimulationEngine.getInstance().getManager(LabourParticipationModel.class.getCanonicalName())).getCountry().toString(), 1, 1);
-//				coeffEducationHigh = ExcelAssistant.loadCoefficientMap("input/reg_education_high.xls", ((LabourParticipationModel) SimulationEngine.getInstance().getManager(LabourParticipationModel.class.getCanonicalName())).getCountry().toString(), 1, 1);
-				coeffEducationLow = ExcelAssistant.loadCoefficientMap("input/reg_education_low.xls", ((LabourParticipationModel) SimulationEngine.getInstance().getManager(LabourParticipationModel.class.getCanonicalName())).getCountry().toString(), 1, 4);		//TODO: Why do we get Null Pointer Exceptions here?  Need to debug the regressions?
-				coeffEducationHigh = ExcelAssistant.loadCoefficientMap("input/reg_education_high.xls", ((LabourParticipationModel) SimulationEngine.getInstance().getManager(LabourParticipationModel.class.getCanonicalName())).getCountry().toString(), 1, 4);
 
-				if(bootstrapAll) {
-					if(bootstrapEducation) {
-//						coeffEducationLow = RegressionUtils.bootstrap(coeffEducationLow);
-//						coeffEducationHigh = RegressionUtils.bootstrap(coeffEducationHigh);
-
-						coeffEducationLowHighCombined = ExcelAssistant.loadCoefficientMap("input/reg_education_lowHighCombined.xls", ((LabourParticipationModel) SimulationEngine.getInstance().getManager(LabourParticipationModel.class.getCanonicalName())).getCountry().toString(), 1, 17);
-						coeffEducationLowHighCombined = RegressionUtils.bootstrap(coeffEducationLowHighCombined);
-						//Need to partition coeffEducationLowHighCombined into separate Low and High MultiKeyCoefficientMaps
-						String[] keyNames = new String[1];
-						keyNames[0] = RegressionColumnNames.REGRESSOR.toString();
-						String[] valueNames = new String[1];
-						valueNames[0] = RegressionColumnNames.COEFFICIENT.toString();
-						coeffEducationLow = new MultiKeyCoefficientMap(keyNames, valueNames);
-						coeffEducationHigh = new MultiKeyCoefficientMap(keyNames, valueNames);				
-						for (MapIterator iterator = coeffEducationLowHighCombined.mapIterator(); iterator.hasNext();) {
-							iterator.next();
-							
-							MultiKey multiKey = (MultiKey) iterator.getKey();
-							String regressor = (String) multiKey.getKey(0);		//Requires regressor names to first key entry in MultiKey
-							if(regressor.startsWith("Low_")) {
-								MultiKey regressorWithoutLowHigh = new MultiKey(new Object[]{regressor.substring(4)});
-								coeffEducationLow.put(regressorWithoutLowHigh, coeffEducationLowHighCombined.get(multiKey));						
-							}
-							else if(regressor.startsWith("High_")) {
-								MultiKey regressorWithoutLowHigh = new MultiKey(new Object[]{regressor.substring(5)});
-								coeffEducationHigh.put(regressorWithoutLowHigh, coeffEducationLowHighCombined.get(multiKey));
-							}
-							else throw new IllegalArgumentException("Regressor does not contain Low or High label required to determine the appropriate MultiKeyCoefficientMap in which to put the corresponding coefficient in, during the creation of the education MultiProbitRegression.");
-						}		
+				if(bootstrapAll && bootstrapEducation) {
+					if(country.equals(Country.IT)) {	//Only have covariance data for Italy
+						//Bootstrap Low and High coefficients together - the correct way of doing it
+						//Bootstrap example
+						coeffEducationLow = ExcelAssistant.loadCoefficientMap("input/reg_education_lowHighCombined.xls", "IT_low", 1, 1);
+						coeffEducationHigh = ExcelAssistant.loadCoefficientMap("input/reg_education_lowHighCombined.xls", "IT_high", 1, 1);
+						Map<Education, MultiKeyCoefficientMap> coeffEducationLowHighMap = new HashMap<Education, MultiKeyCoefficientMap>();
+						coeffEducationLowHighMap.put(Education.Low, coeffEducationLow);
+						coeffEducationLowHighMap.put(Education.High, coeffEducationHigh);
+						MultiKeyCoefficientMap educationLowHighCombinedCovariance = ExcelAssistant.loadCoefficientMap("input/reg_education_lowHighCombined.xls", "IT_covariance", 1, 16);
+						coeffEducationLowHighMap = RegressionUtils.boostrapMultinomialRegression(coeffEducationLowHighMap, educationLowHighCombinedCovariance, Education.class);
+						regEducationLevel = new MultiProbitRegression<Education>(coeffEducationLowHighMap);							
+						
+//							coeffEducationLowHighCombined = ExcelAssistant.loadCoefficientMap("input/reg_education_lowHighCombined.xls", ((LabourParticipationModel) SimulationEngine.getInstance().getManager(LabourParticipationModel.class.getCanonicalName())).getCountry().toString(), 1, 17);
+//							coeffEducationLowHighCombined = RegressionUtils.bootstrap(coeffEducationLowHighCombined);
+//							//Need to partition coeffEducationLowHighCombined into separate Low and High MultiKeyCoefficientMaps
+//							String[] keyNames = new String[1];
+//							keyNames[0] = RegressionColumnNames.REGRESSOR.toString();
+//							String[] valueNames = new String[1];
+//							valueNames[0] = RegressionColumnNames.COEFFICIENT.toString();
+//							coeffEducationLow = new MultiKeyCoefficientMap(keyNames, valueNames);
+//							coeffEducationHigh = new MultiKeyCoefficientMap(keyNames, valueNames);				
+//							for (MapIterator iterator = coeffEducationLowHighCombined.mapIterator(); iterator.hasNext();) {
+//								iterator.next();
+//								
+//								MultiKey multiKey = (MultiKey) iterator.getKey();
+//								String regressor = (String) multiKey.getKey(0);		//Requires regressor names to first key entry in MultiKey
+//								if(regressor.startsWith("Low_")) {
+//									MultiKey regressorWithoutLowHigh = new MultiKey(new Object[]{regressor.substring(4)});
+//									coeffEducationLow.put(regressorWithoutLowHigh, coeffEducationLowHighCombined.get(multiKey));						
+//								}
+//								else if(regressor.startsWith("High_")) {
+//									MultiKey regressorWithoutLowHigh = new MultiKey(new Object[]{regressor.substring(5)});
+//									coeffEducationHigh.put(regressorWithoutLowHigh, coeffEducationLowHighCombined.get(multiKey));
+//								}
+//								else throw new IllegalArgumentException("Regressor does not contain Low or High label required to determine the appropriate MultiKeyCoefficientMap in which to put the corresponding coefficient in, during the creation of the education MultiProbitRegression.");
+//							}
 					}
+					else throw new NullPointerException("Bootstrapping of Education coefficients can only be done for Italy, as the combined Low and High Education covariance matrix is only available for Italy.");
 				}
-				
-				
-				//Now create MultiProbitRegression object:
-				HashMap<Education, MultiKeyCoefficientMap> educationCoefficientMap = new HashMap<Education, MultiKeyCoefficientMap>();
-				educationCoefficientMap.put(Education.Low, coeffEducationLow);
-				educationCoefficientMap.put(Education.High, coeffEducationHigh);
-				regEducationLevel = new MultiProbitRegression<Education>(educationCoefficientMap);	
+				else {		//Don't bootstrap education coefficients
+					coeffEducationLow = ExcelAssistant.loadCoefficientMap("input/reg_education_low.xls", ((LabourParticipationModel) SimulationEngine.getInstance().getManager(LabourParticipationModel.class.getCanonicalName())).getCountry().toString(), 1, 4);		//TODO: Why do we get Null Pointer Exceptions here?  Need to debug the regressions?
+					coeffEducationHigh = ExcelAssistant.loadCoefficientMap("input/reg_education_high.xls", ((LabourParticipationModel) SimulationEngine.getInstance().getManager(LabourParticipationModel.class.getCanonicalName())).getCountry().toString(), 1, 4);
+					//Now create MultiProbitRegression object:
+					HashMap<Education, MultiKeyCoefficientMap> educationCoefficientMap = new HashMap<Education, MultiKeyCoefficientMap>();
+					educationCoefficientMap.put(Education.Low, coeffEducationLow);
+					educationCoefficientMap.put(Education.High, coeffEducationHigh);
+					regEducationLevel = new MultiProbitRegression<Education>(educationCoefficientMap);	
+				}
 				break;
 			case TwoStageProbit:	//Regression co-efficients specific to TwoStageProbit case are not currently bootstrapped
 				MultiKeyCoefficientMap coeffEducationMedium = ExcelAssistant.loadCoefficientMap("input/reg_education_medium.xls", ((LabourParticipationModel) SimulationEngine.getInstance().getManager(LabourParticipationModel.class.getCanonicalName())).getCountry().toString(), 1, 1);
