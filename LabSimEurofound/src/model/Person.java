@@ -153,8 +153,8 @@ public class Person implements EventListener, IDoubleSource, IIntSource //, Comp
 	public Person( long idNumber) {
 		this();
 		
-		key = new PanelEntityKey();
-		key.setId(idNumber);
+		key = new PanelEntityKey(idNumber);
+
 	}
 	
 	//For use with creating new people at the minimum Age who enter the simulation during population alignment. 
