@@ -1130,7 +1130,7 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
 	public Person getPerson(Long id) {
 
 		for (Person person : persons) {
-			if ((person.getId() != null) && (person.getId().getId().equals(id)))
+			if ((person.getKey() != null) && (person.getKey().getId().equals(id)))
 				return person;
 		}
 		throw new IllegalArgumentException("Person with id " + id

@@ -27,13 +27,13 @@ import model.enums.Region;
 public class Person implements EventListener, IDoubleSource, IIntSource //, Comparable<Person>
 {
 	
-	public static long personIdCounter = 1000000;			//Could perhaps initialise this to one above the max id number in initial population, in the same way that we pull the max Age information from the input files.
+	public static long personIdCounter = 1000000;			//Could perhaps initialise this to one above the max key number in initial population, in the same way that we pull the max Age information from the input files.
 	
 	@Transient
 	private LabourParticipationModel model;
 	
 	@Id
-	private PanelEntityKey id;
+	private PanelEntityKey key;
 		
 	private int age;
 	
@@ -153,13 +153,13 @@ public class Person implements EventListener, IDoubleSource, IIntSource //, Comp
 	public Person( long idNumber) {
 		this();
 		
-		id = new PanelEntityKey();
-		id.setId(idNumber);
+		key = new PanelEntityKey();
+		key.setId(idNumber);
 	}
 	
 	//For use with creating new people at the minimum Age who enter the simulation during population alignment. 
 	public Person( long idNumber, boolean initialiseToMinimumAgeDefaults, Gender gender) {
-		this(personIdCounter++);		//Sets up id
+		this(personIdCounter++);		//Sets up key
 
 		if(initialiseToMinimumAgeDefaults) {
 			setAge(Parameters.getMinAge());
@@ -223,7 +223,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource //, Comp
 	
 	//Copy constructor used to create 'clones' of existing population in population alignment module
 	public Person(Person person) {
-		this(personIdCounter++);		//Sets up id
+		this(personIdCounter++);		//Sets up key
 		
 		//Copied from person
 		this.age = person.age;
@@ -1109,12 +1109,12 @@ public class Person implements EventListener, IDoubleSource, IIntSource //, Comp
 	// ---------------------------------------------------------------------
 
 	
-	public PanelEntityKey getId() {
-		return id;
+	public PanelEntityKey getKey() {
+		return key;
 	}
 
-	public void setId(PanelEntityKey id) {
-		this.id = id;
+	public void setKey(PanelEntityKey key) {
+		this.key = key;
 	}
 
 	public int getAge() {
