@@ -14,7 +14,7 @@ import java.sql.Statement;
 
 import microsim.alignment.outcome.ResamplingAlignment;
 import microsim.alignment.outcome.AlignmentOutcomeClosure;
-import microsim.annotation.ModelParameter;
+import microsim.annotation.GUIparameter;
 import microsim.data.db.DatabaseUtils;
 import microsim.engine.AbstractSimulationManager;
 import microsim.engine.SimulationEngine;
@@ -44,37 +44,37 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
 
 	private static Logger log = Logger.getLogger(LabourParticipationModel.class);
 
-	@ModelParameter(description = "Country to be simulated")
+	@GUIparameter(description = "Country to be simulated")
 	private Country country = Country.IT;
 	
-	@ModelParameter(description = "Simulated population size (base year) [max = 100,000]")
+	@GUIparameter(description = "Simulated population size (base year) [max = 100,000]")
 	private Integer popSize = 100000;
 
-	@ModelParameter(description = "Simulation first year [valid range 2013-2049]")
+	@GUIparameter(description = "Simulation first year [valid range 2013-2049]")
 	private Integer startYear = 2013;
 
-	@ModelParameter(description = "Simulation ends at year [valid range 2014-2050]")
+	@GUIparameter(description = "Simulation ends at year [valid range 2014-2050]")
 	private Integer endYear = 2050;
 	
-	@ModelParameter(description = "Cohort effect stopped for those born after")
+	@GUIparameter(description = "Cohort effect stopped for those born after")
 	private Integer cohortEffectEndTrend = 1995;
 	
-	@ModelParameter(description="Minimum age for males to retire")
+	@GUIparameter(description="Minimum age for males to retire")
 	private Integer minRetireAgeMales = 45;
 
-	@ModelParameter(description="Maximum age for males to retire")
+	@GUIparameter(description="Maximum age for males to retire")
 	private Integer maxRetireAgeMales = 75;
 
-	@ModelParameter(description="Minimum age for females to retire")
+	@GUIparameter(description="Minimum age for females to retire")
 	private Integer minRetireAgeFemales = 45;
 
-	@ModelParameter(description="Maximum age for females to retire")
+	@GUIparameter(description="Maximum age for females to retire")
 	private Integer maxRetireAgeFemales = 75;
 
-	@ModelParameter(description = "Fix random seed?")
+	@GUIparameter(description = "Fix random seed?")
 	private Boolean fixRandomSeed = true;
 
-	@ModelParameter(description = "If random seed is fixed, set to this number")
+	@GUIparameter(description = "If random seed is fixed, set to this number")
 	private Long randomSeedIfFixed = 1L;
 
 	private List<Person> persons;

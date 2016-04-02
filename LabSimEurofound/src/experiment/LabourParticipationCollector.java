@@ -11,7 +11,7 @@ import model.LabourParticipationModel;
 import model.Person;
 import model.Statistics;
 import model.enums.Education;
-import microsim.annotation.ModelParameter;
+import microsim.annotation.GUIparameter;
 import microsim.data.DataExport;
 import microsim.engine.AbstractSimulationCollectorManager;
 import microsim.engine.SimulationEngine;
@@ -28,19 +28,19 @@ public class LabourParticipationCollector extends AbstractSimulationCollectorMan
 
 	private static Logger log = Logger.getLogger(LabourParticipationCollector.class);
 	
-	@ModelParameter(description="Toggle to turn database persistence on/off")
+	@GUIparameter(description="Toggle to turn database persistence on/off")
 	private boolean exportToDatabase = false;
 	
-	@ModelParameter(description="Toggle to turn export to .csv files on/off")
+	@GUIparameter(description="Toggle to turn export to .csv files on/off")
 	private boolean exportToCSV = true;
 	
-	@ModelParameter(description="Toggle to turn persistence of persons on/off")
+	@GUIparameter(description="Toggle to turn persistence of persons on/off")
 	private boolean persistPersons = true;
 
-	@ModelParameter(description="First time-step to dump data to database")
+	@GUIparameter(description="First time-step to dump data to database")
 	private Long dataDumpStartTime = 0L;
 
-	@ModelParameter(description="Number of time-steps in between database dumps")
+	@GUIparameter(description="Number of time-steps in between database dumps")
 	private Double dataDumpTimePeriod = 1.;
 	
 	private Statistics stats;

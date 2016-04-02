@@ -1,6 +1,6 @@
 package experiment;
 
-import microsim.annotation.ModelParameter;
+import microsim.annotation.GUIparameter;
 import microsim.engine.AbstractSimulationObserverManager;
 import microsim.engine.SimulationCollectorManager;
 import microsim.engine.SimulationEngine;
@@ -22,10 +22,10 @@ import data.filters.MaleAgeGroupCSfilter;
 
 public class LabourParticipationObserver extends AbstractSimulationObserverManager implements EventListener {
 
-	@ModelParameter(description="Toggle to turn charts on/off")
+	@GUIparameter(description="Toggle to turn charts on/off")
 	private Boolean showCharts = true;
 	
-	@ModelParameter
+	@GUIparameter
 	private Double displayFrequency = 1.;
 		
 	private CrossSection.Integer lowEducationCS;
