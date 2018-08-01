@@ -236,11 +236,11 @@ public class LabourParticipationCollector extends AbstractSimulationCollectorMan
 		LabourParticipationModel model = (LabourParticipationModel) SimulationEngine.getInstance().getManager(LabourParticipationModel.class.getCanonicalName());
 		
 		int ordering = 1;
-		getEngine().getEventList().scheduleRepeat(new SingleTargetEvent(this, Processes.DumpStatistics), model.getStartYear() + dataDumpStartTime, ordering, dataDumpTimePeriod);
+		getEngine().getEventQueue().scheduleRepeat(new SingleTargetEvent(this, Processes.DumpStatistics), model.getStartYear() + dataDumpStartTime, ordering, dataDumpTimePeriod);
 		
 		if (persistPersons) {
-			getEngine().getEventList().scheduleRepeat(new SingleTargetEvent(this, Processes.DumpPersons), model.getStartYear() + dataDumpStartTime, ordering, dataDumpTimePeriod);
-			getEngine().getEventList().scheduleRepeat(new SingleTargetEvent(this, Processes.DumpPersons), model.getEndYear(), -2, 0.);		//Ensures the database is persisted on the last time-step
+			getEngine().getEventQueue().scheduleRepeat(new SingleTargetEvent(this, Processes.DumpPersons), model.getStartYear() + dataDumpStartTime, ordering, dataDumpTimePeriod);
+			getEngine().getEventQueue().scheduleRepeat(new SingleTargetEvent(this, Processes.DumpPersons), model.getEndYear(), -2, 0.);		//Ensures the database is persisted on the last time-step
 		}
 		
 	}

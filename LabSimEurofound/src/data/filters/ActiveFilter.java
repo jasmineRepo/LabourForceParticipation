@@ -1,16 +1,15 @@
 package data.filters;
 
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 import model.Person;
 import model.enums.Activity_status;
 
-public class ActiveFilter implements Predicate {
+public class ActiveFilter<T extends Person> implements Predicate<T> {
 
 	@Override
-	public boolean evaluate(Object object) {
+	public boolean evaluate(T agent) {
 		
-		Person agent = (Person) object;
 		return agent.getActivity_status().equals(Activity_status.Active);
 		
 	}

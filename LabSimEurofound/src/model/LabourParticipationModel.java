@@ -415,11 +415,11 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
 		yearlySchedule.addEvent(this, Processes.UpdateYear);
 
 		int order = 0;
-		getEngine().getEventList().scheduleRepeat(yearlySchedule, startYear, order, 1.);
+		getEngine().getEventQueue().scheduleRepeat(yearlySchedule, startYear, order, 1.);
 		
 		SystemEvent e = new SystemEvent(SimulationEngine.getInstance(), SystemEventType.End);
 		int orderEarlier = -1;			//Set less than order so that this is called before the yearlySchedule in the endYear.
-		getEngine().getEventList().scheduleRepeat(e, endYear, orderEarlier, 0.);
+		getEngine().getEventQueue().scheduleRepeat(e, endYear, orderEarlier, 0.);
 	}
 
 	// ---------------------------------------------------------------------
@@ -520,7 +520,7 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
 	}
 	
 	
-//	TODO: Need to allow cells with no people to sample from nearby Age / sex in demographic alignment (or at least throw a warning).  This is likely to be an issue with people at the very oldest ages which represent a small size of the real population, and then when scaled down by the scaling factor have a value < 1, which is then rounded down…  Could perhaps always round up, to ensure at least 1 person for each Female / Age?
+//	TODO: Need to allow cells with no people to sample from nearby Age / sex in demographic alignment (or at least throw a warning).  This is likely to be an issue with people at the very oldest ages which represent a small size of the real population, and then when scaled down by the scaling factor have a value < 1, which is then rounded downï¿½  Could perhaps always round up, to ensure at least 1 person for each Female / Age?
 	@SuppressWarnings("unchecked")
 	private void populationAlignment() { // Align national population by Age and
 											// Female using
@@ -868,7 +868,7 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
 			System.out.println("Union alignment target rate, " + cohabitingFemalesUnder45rateTarget);
 		}
 		new ResamplingAlignment<Person>().align(getPersons(),
-				new FemalesUnder45Filter(), new AlignmentOutcomeClosure<Person>() {
+				new FemalesUnder45Filter<Person>(), new AlignmentOutcomeClosure<Person>() {
 
 					@Override
 					public boolean getOutcome(Person agent) {
@@ -903,7 +903,7 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
 		double fertilityRate = Parameters.getFertilityRateInYear().get(year);
 
 		new ResamplingAlignment<Person>().align(getPersons(),
-				new FertileFilter(), new AlignmentOutcomeClosure<Person>() {
+				new FertileFilter<Person>(), new AlignmentOutcomeClosure<Person>() {
 
 					@Override
 					public boolean getOutcome(Person agent) {
@@ -985,7 +985,7 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
 //				System.out.println("ageFrom ," + ageFrom + ", ageTo ," + ageTo + ", target is ," + targetProportionOfFemalesWithChildrenWhoAreActive);
 				
 				new ResamplingAlignment<Person>().align(getPersons(),
-						new FemaleWithChildrenByAgeBandFilter(ageFrom, ageTo), new AlignmentOutcomeClosure<Person>() {
+						new FemaleWithChildrenByAgeBandFilter<Person>(ageFrom, ageTo), new AlignmentOutcomeClosure<Person>() {
 		
 							@Override
 							public boolean getOutcome(Person agent) {
@@ -1035,7 +1035,7 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
 		
 		// Align
 		new ResamplingAlignment<Person>().align(getPersons(),
-				new ActiveFilter(), new AlignmentOutcomeClosure<Person>() {
+				new ActiveFilter<Person>(), new AlignmentOutcomeClosure<Person>() {
 
 					@Override
 					public boolean getOutcome(Person agent) {							
@@ -1127,10 +1127,10 @@ public class LabourParticipationModel extends AbstractSimulationManager implemen
 		return endYear;
 	}
 
-	public Person getPerson(Long id) {
+	public Person getPerson(long id) {
 
 		for (Person person : persons) {
-			if ((person.getKey() != null) && (person.getKey().getId().equals(id)))
+			if ((person.getKey() != null) && (person.getKey().getId() == id))
 				return person;
 		}
 		throw new IllegalArgumentException("Person with id " + id

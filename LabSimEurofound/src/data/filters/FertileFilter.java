@@ -1,18 +1,17 @@
 package data.filters;
 
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 import data.Parameters;
 import model.Person;
 import model.enums.Activity_status;
 import model.enums.Gender;
 
-public class FertileFilter implements Predicate {
+public class FertileFilter<T extends Person> implements Predicate<T> {
 
 	@Override
-	public boolean evaluate(Object object) {
+	public boolean evaluate(T agent) {
 		
-		Person agent = (Person) object;
 		int age = agent.getAge();
 		
 		return ( (agent.getGender().equals(Gender.Female)) &&

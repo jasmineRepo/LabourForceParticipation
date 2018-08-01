@@ -349,7 +349,7 @@ public class LabourParticipationObserver extends AbstractSimulationObserverManag
 			chartingEvents.addEvent(new SingleTargetEvent(employed40sPlotter, CommonEventType.Update));
 			
 			int ordering = 2;		//Schedule at the same time as the model and collector events, but with an higher order, so will be fired after the model and collector have updated. 
-			getEngine().getEventList().scheduleRepeat(chartingEvents, model.getStartYear(), ordering, displayFrequency);
+			getEngine().getEventQueue().scheduleRepeat(chartingEvents, model.getStartYear(), ordering, displayFrequency);
 		
 		}
 							
